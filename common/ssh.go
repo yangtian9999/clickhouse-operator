@@ -13,10 +13,10 @@ import (
 	"time"
 
 	scp "github.com/bramvdbogaerde/go-scp"
-	"github.com/housepower/ckman/model"
+	"github.com/yangtian9999/clickhouse-operator/model"
 
-	"github.com/housepower/ckman/config"
-	"github.com/housepower/ckman/log"
+	"github.com/yangtian9999/clickhouse-operator/config"
+	"github.com/yangtian9999/clickhouse-operator/log"
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh"

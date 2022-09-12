@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/housepower/ckman/log"
+	"github.com/yangtian9999/clickhouse-operator/log"
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"

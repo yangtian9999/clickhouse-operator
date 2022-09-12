@@ -2,14 +2,15 @@ package common
 
 import (
 	"fmt"
-	"github.com/housepower/ckman/config"
-	"github.com/pkg/errors"
 	"os"
 	"path"
 	"reflect"
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/pkg/errors"
+	"github.com/yangtian9999/clickhouse-operator/config"
 )
 
 const (

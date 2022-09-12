@@ -7,7 +7,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/housepower/ckman/log"
+	"github.com/yangtian9999/clickhouse-operator/log"
 )
 
 func init() {

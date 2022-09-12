@@ -3,9 +3,9 @@ package common
 import (
 	"testing"
 
-	"github.com/housepower/ckman/log"
-	"github.com/housepower/ckman/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/yangtian9999/clickhouse-operator/log"
+	"github.com/yangtian9999/clickhouse-operator/model"
 )
 
 func TestRemoteExecute(t *testing.T) {

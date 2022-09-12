@@ -12,9 +12,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/housepower/ckman/log"
-	"github.com/housepower/ckman/model"
 	"github.com/pkg/errors"
+	"github.com/yangtian9999/clickhouse-operator/log"
+	"github.com/yangtian9999/clickhouse-operator/model"
 )
 
 var ConnectPool sync.Map

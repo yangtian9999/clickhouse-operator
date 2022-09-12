@@ -2,7 +2,7 @@ package common
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/housepower/ckman/model"
+	"github.com/yangtian9999/clickhouse-operator/model"
 )
 
 var (
