@@ -29,7 +29,22 @@ type CkinstanceSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of Ckinstance. Edit ckinstance_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Foo string `json:"foo,omitempty"`
+
+	// +kubebuilder:validation:MinLength=1
+	DatabaseName string `json:"databaseName,omitempty"`
+
+	// +kubebuilder:validation:MinLength=1
+	Namespace string `json:"namespace,omitempty"`
+
+	// +kubebuilder:validation:Minimum=0
+	Shards int32 `json:"shards,omitempty"`
+
+	// +kubebuilder:validation:Minimum=0
+	TcpPort int32 `json:"tcpPort,omitempty"`
+
+	// +kubebuilder:validation:MinLength=1
+	Image string `json:"image,omitempty"`
 }
 
 // CkinstanceStatus defines the observed state of Ckinstance

@@ -19,12 +19,15 @@ package controllers
 import (
 	"context"
 
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	ckopv1alpha1 "github.com/yangtian9999/clickhouse-operator/api/v1alpha1"
+	"github.com/yangtian9999/clickhouse-operator/resource"
 )
 
 // CkinstanceReconciler reconciles a Ckinstance object
@@ -36,6 +39,8 @@ type CkinstanceReconciler struct {
 //+kubebuilder:rbac:groups=ckop.yt9999.io,resources=ckinstances,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=ckop.yt9999.io,resources=ckinstances/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=ckop.yt9999.io,resources=ckinstances/finalizers,verbs=update
+// +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=apps,resources=deployments/status,verbs=get
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -50,6 +55,20 @@ func (r *CkinstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
+	//db, err := service.FetchDatabaseCR(req.Name, req.Namespace, r.Client)
+	instance := &ckopv1alpha1.Ckinstance{}
+	err := r.Get(ctx, req.NamespacedName, instance)
+
+	if err != nil {
+		if errors.IsNotFound(err) {
+			return reconcile.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
+
+	if err := r.Client.Create(context.TODO(), resource.NewDatabaseDeployment(instance, r.Scheme)); err != nil {
+		return ctrl.Result{}, err
+	}
 
 	return ctrl.Result{}, nil
 }
