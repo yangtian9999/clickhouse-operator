@@ -35,10 +35,23 @@ spec:
           spec:
             description: CkinstanceSpec defines the desired state of Ckinstance
             properties:
-              foo:
-                description: Foo is an example field of Ckinstance. Edit ckinstance_types.go
-                  to remove/update
+              databaseName:
+                minLength: 1
                 type: string
+              image:
+                minLength: 1
+                type: string
+              namespace:
+                minLength: 1
+                type: string
+              shards:
+                format: int32
+                minimum: 0
+                type: integer
+              tcpPort:
+                format: int32
+                minimum: 0
+                type: integer
             type: object
           status:
             description: CkinstanceStatus defines the observed state of Ckinstance

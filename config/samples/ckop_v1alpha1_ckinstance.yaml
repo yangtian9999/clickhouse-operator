@@ -2,5 +2,11 @@ apiVersion: ckop.yt9999.io/v1alpha1
 kind: Ckinstance
 metadata:
   name: ckinstance-sample
+  namespace: test
 spec:
   # TODO(user): Add fields here
+  databaseName: test1
+  namespace: test
+  shards: 3
+  tcpPort: 9000
+  image: clickhouse/clickhouse-server:21.8.15

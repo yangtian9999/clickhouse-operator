@@ -14,6 +14,10 @@ RUN go mod download
 COPY main.go main.go
 COPY api/ api/
 COPY controllers/ controllers/
+COPY ckconfig/ ckconfig/
+COPY common/ common/
+COPY config/ config/
+COPY model/ model/
 COPY resource/ resource/
 COPY service/ service/
 
