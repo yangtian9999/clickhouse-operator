@@ -1,0 +1,16 @@
+domain: yt9999.io
+layout:
+- go.kubebuilder.io/v3
+projectName: clickhouse-operator
+repo: github.com/yangtian9999/clickhouse-operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: yt9999.io
+  group: ckop
+  kind: Ckinstance
+  path: github.com/yangtian9999/clickhouse-operator/api/v1alpha1
+  version: v1alpha1
+version: "3"

@@ -1,0 +1,33 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - ckop.yt9999.io
+  resources:
+  - ckinstances
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ckop.yt9999.io
+  resources:
+  - ckinstances/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ckop.yt9999.io
+  resources:
+  - ckinstances/status
+  verbs:
+  - get
+  - patch
+  - update

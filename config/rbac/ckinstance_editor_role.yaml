@@ -1,0 +1,24 @@
+# permissions for end users to edit ckinstances.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ckinstance-editor-role
+rules:
+- apiGroups:
+  - ckop.yt9999.io
+  resources:
+  - ckinstances
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ckop.yt9999.io
+  resources:
+  - ckinstances/status
+  verbs:
+  - get

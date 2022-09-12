@@ -1,0 +1,6 @@
+apiVersion: ckop.yt9999.io/v1alpha1
+kind: Ckinstance
+metadata:
+  name: ckinstance-sample
+spec:
+  # TODO(user): Add fields here
