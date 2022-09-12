@@ -33,17 +33,16 @@ func Md5CheckSum(s string) string {
 	return hex.EncodeToString(sum[:16])
 }
 
-
 type Collection interface {
-	Union(oth interface{})interface{}
-	Intersect(oth interface{})interface{}
-	Difference(oth interface{})interface{}
+	Union(oth interface{}) interface{}
+	Intersect(oth interface{}) interface{}
+	Difference(oth interface{}) interface{}
 }
 
 type Map map[string]interface{}
 
 // Union elem both in this and oth, If the same key have different value, use this
-func (this  Map)Union(oth interface{})interface{} {
+func (this Map) Union(oth interface{}) interface{} {
 	out := make(Map)
 	other := oth.(Map)
 	for k, v := range other {
@@ -57,7 +56,7 @@ func (this  Map)Union(oth interface{})interface{} {
 }
 
 // Intersect if this and oth both have key, but have not equal value, discover with this's value
-func (this  Map)Intersect(oth interface{})interface{} {
+func (this Map) Intersect(oth interface{}) interface{} {
 	out := make(Map)
 	other := oth.(Map)
 	for k, v := range this {
@@ -70,7 +69,7 @@ func (this  Map)Intersect(oth interface{})interface{} {
 }
 
 // Difference elemt in this, not in oth
-func (this  Map)Difference(oth interface{})interface{} {
+func (this Map) Difference(oth interface{}) interface{} {
 	out := make(Map)
 	other := oth.(Map)
 	for k, v := range this {

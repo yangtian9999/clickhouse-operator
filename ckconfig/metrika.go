@@ -1,8 +1,8 @@
 package ckconfig
 
 import (
-	"github.com/housepower/ckman/common"
-	"github.com/housepower/ckman/model"
+	"github.com/yangtian9999/clickhouse-operator/common"
+	"github.com/yangtian9999/clickhouse-operator/model"
 )
 
 func GenerateMetrikaXML(filename string, conf *model.CKManClickHouseConfig) (string, error) {

@@ -77,7 +77,6 @@ func TestMap_Intersect(t *testing.T) {
 	assert.Equal(t, expect, result)
 }
 
-
 func TestMap_Difference(t *testing.T) {
 	m1 := Map{
 		"kk1": "vv1",

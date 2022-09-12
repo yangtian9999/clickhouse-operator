@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"strings"
 )
+
 var salt = "656f6974656b"
 
 // select hex(aes_encrypt("123456", unhex("656f6974656b"))); => E310E892E56801CED9ED98AA177F18E6
@@ -14,7 +15,7 @@ func AesEncryptECB(origData string) string {
 	}
 	var encrypted []byte
 	var o = []byte(origData)
-	s,_ := hex.DecodeString(salt)
+	s, _ := hex.DecodeString(salt)
 	cipher, _ := aes.NewCipher(generateKey(s))
 	length := (len(o) + aes.BlockSize) / aes.BlockSize
 	plain := make([]byte, length*aes.BlockSize)
