@@ -3,9 +3,9 @@ package ckconfig
 import (
 	"testing"
 
-	"github.com/housepower/ckman/common"
-	"github.com/housepower/ckman/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/yangtian9999/clickhouse-operator/common"
+	"github.com/yangtian9999/clickhouse-operator/model"
 )
 
 func TestUsers(t *testing.T) {

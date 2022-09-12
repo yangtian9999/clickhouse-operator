@@ -1,9 +1,9 @@
 package ckconfig
 
 import (
-	"github.com/housepower/ckman/common"
-	"github.com/housepower/ckman/model"
 	"github.com/imdario/mergo"
+	"github.com/yangtian9999/clickhouse-operator/common"
+	"github.com/yangtian9999/clickhouse-operator/model"
 )
 
 type HostInfo struct {

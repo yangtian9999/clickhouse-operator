@@ -1,9 +1,10 @@
 package ckconfig
 
 import (
-	"github.com/housepower/ckman/model"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/yangtian9999/clickhouse-operator/model"
 )
 
 func TestGenerateCustomXML(t *testing.T) {

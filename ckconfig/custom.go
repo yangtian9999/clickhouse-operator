@@ -5,9 +5,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/housepower/ckman/common"
-	"github.com/housepower/ckman/model"
 	"github.com/imdario/mergo"
+	"github.com/yangtian9999/clickhouse-operator/common"
+	"github.com/yangtian9999/clickhouse-operator/model"
 )
 
 func root(conf *model.CKManClickHouseConfig, ipv6Enable bool) map[string]interface{} {
