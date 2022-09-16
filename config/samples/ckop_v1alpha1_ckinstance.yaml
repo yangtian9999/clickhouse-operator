@@ -7,6 +7,6 @@ spec:
   # TODO(user): Add fields here
   databaseName: test1
   namespace: test
-  shards: 3
+  shards: 4
   tcpPort: 9000
   image: clickhouse/clickhouse-server:21.8.15

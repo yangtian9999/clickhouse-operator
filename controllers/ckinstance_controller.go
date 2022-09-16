@@ -18,16 +18,18 @@ package controllers
 
 import (
 	"context"
+	"encoding/json"
+	"reflect"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	ckopv1alpha1 "github.com/yangtian9999/clickhouse-operator/api/v1alpha1"
-	"github.com/yangtian9999/clickhouse-operator/resource"
+	"github.com/yangtian9999/clickhouse-operator/service"
+	appsv1 "k8s.io/api/apps/v1"
 )
 
 // CkinstanceReconciler reconciles a Ckinstance object
@@ -56,21 +58,105 @@ func (r *CkinstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 
 	// TODO(user): your logic here
 	//db, err := service.FetchDatabaseCR(req.Name, req.Namespace, r.Client)
+	// Get ck instance cr
 	instance := &ckopv1alpha1.Ckinstance{}
-	err := r.Get(ctx, req.NamespacedName, instance)
-
-	if err != nil {
+	if err := r.Client.Get(ctx, req.NamespacedName, instance); err != nil {
 		if errors.IsNotFound(err) {
-			return reconcile.Result{}, nil
+			return ctrl.Result{}, nil
 		}
-		return ctrl.Result{}, err
 	}
 
-	if err := r.Client.Create(context.TODO(), resource.NewDatabaseDeployment(instance, r.Scheme)); err != nil {
-		return ctrl.Result{}, err
+	// If ck cr was deleted, return nil
+	if instance.DeletionTimestamp != nil {
+		return ctrl.Result{}, nil
+	}
+
+	// Get ck deployment resource
+	oldDeployment := &appsv1.Deployment{}
+
+	//TODO: 如果StatefulSet不存在，则创建
+	if err := r.Client.Get(ctx, req.NamespacedName, oldDeployment); err != nil {
+		if errors.IsNotFound(err) {
+			// r.Log.Info("Redis对应的StatefulSet不存在，执行创建过程")
+
+			// 创建StatefulSet
+			// if err := r.Client.Create(ctx, statefulset.New(instance)); err != nil {
+			// 	return ctrl.Result{}, err
+			// }
+			if err := r.Client.Create(context.TODO(), service.NewDatabaseDeployment(instance, r.Scheme)); err != nil {
+				return ctrl.Result{}, err
+			}
+
+			// 创建Service
+			// if err := r.Client.Create(ctx, service.New(instance)); err != nil {
+			// 	return ctrl.Result{}, err
+			// }
+
+			// 更新资源的注解
+			data, _ := json.Marshal(instance.Spec)
+			if instance.Annotations != nil {
+				instance.Annotations["spec"] = string(data)
+			} else {
+				instance.Annotations = map[string]string{"spec": string(data)}
+			}
+			if err := r.Client.Update(ctx, instance); err != nil {
+				return ctrl.Result{}, err
+			}
+
+		} else {
+			return ctrl.Result{}, err
+		}
+	} else {
+		//TODO: 如果StatefulSet存在，则更新
+		// oldSpec := redisv1.RedisSpec{}
+		oldSpec := ckopv1alpha1.CkinstanceSpec{}
+		if err := json.Unmarshal([]byte(instance.Annotations["spec"]), &oldSpec); err != nil {
+			return ctrl.Result{}, nil
+		}
+
+		// 对比当前资源实例跟原来的定义， 不相等则更新，相等则不处理
+		if !reflect.DeepEqual(oldSpec, instance.Spec) {
+			// 更新StatefulSet, 只更换Spec
+			newStatefulSet := statefulset.New(instance)
+			oldStatefulset.Spec = newStatefulSet.Spec
+			if err := r.Client.Update(ctx, oldStatefulset); err != nil {
+				return ctrl.Result{}, err
+			}
+
+			// 更新service
+			newService := service.New(instance)
+			oldService := &corev1.Service{}
+			if err := r.Client.Get(ctx, req.NamespacedName, oldService); err != nil {
+				return ctrl.Result{}, err
+			}
+			// 创建出的Service的Spec中会生成一些其他内容，需要重新赋值
+			clusterIP := oldService.Spec.ClusterIP
+			oldService.Spec = newService.Spec
+			oldService.Spec.ClusterIP = clusterIP // Service的ClusterIP, 10.254.x.x
+			if err := r.Client.Update(ctx, oldService); err != nil {
+				return ctrl.Result{}, err
+			}
+
+			// 更新资源的 Annotations
+			data, _ := json.Marshal(instance.Spec)
+			if instance.Annotations != nil {
+				instance.Annotations["spec"] = string(data)
+			} else {
+				instance.Annotations = map[string]string{"spec": string(data)}
+			}
+			if err := r.Client.Update(ctx, instance); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
 	}
 
 	return ctrl.Result{}, nil
+
+	// if err := r.Client.Create(context.TODO(), resource.NewDatabaseDeployment(instance, r.Scheme)); err != nil {
+	// 	return ctrl.Result{}, err
+	// }
+
+	// return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.

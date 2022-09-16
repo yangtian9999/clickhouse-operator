@@ -1,4 +1,4 @@
-package resource
+package service
 
 import (
 	"github.com/yangtian9999/clickhouse-operator/api/v1alpha1"
@@ -19,7 +19,7 @@ func NewDatabaseDeployment(db *v1alpha1.Ckinstance, scheme *runtime.Scheme) *app
 			Labels:    ls,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: &db.Spec.Shards,
+			Replicas: db.Spec.Shards,
 			Strategy: appsv1.DeploymentStrategy{
 				Type: appsv1.RecreateDeploymentStrategyType,
 			},
@@ -40,6 +40,14 @@ func NewDatabaseDeployment(db *v1alpha1.Ckinstance, scheme *runtime.Scheme) *app
 							Protocol:      "TCP",
 						}},
 					}},
+					Volumes: []corev1.Volume{
+						Name: db.Spec.DatabaseName,
+						VolumeSource: corev1.VolumeSource{
+							PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+								ClaimName: db.Spec.DatabaseName,
+							},
+						},
+					},
 				},
 			},
 		},
