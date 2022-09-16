@@ -19,7 +19,6 @@ package controllers
 import (
 	"context"
 	"encoding/json"
-	"reflect"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -106,48 +105,48 @@ func (r *CkinstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		} else {
 			return ctrl.Result{}, err
 		}
-	} else {
-		//TODO: 如果StatefulSet存在，则更新
-		// oldSpec := redisv1.RedisSpec{}
-		oldSpec := ckopv1alpha1.CkinstanceSpec{}
-		if err := json.Unmarshal([]byte(instance.Annotations["spec"]), &oldSpec); err != nil {
-			return ctrl.Result{}, nil
-		}
+		// } else {
+		// 	//TODO: 如果StatefulSet存在，则更新
+		// 	// oldSpec := redisv1.RedisSpec{}
+		// 	oldSpec := ckopv1alpha1.CkinstanceSpec{}
+		// 	if err := json.Unmarshal([]byte(instance.Annotations["spec"]), &oldSpec); err != nil {
+		// 		return ctrl.Result{}, nil
+		// 	}
 
-		// 对比当前资源实例跟原来的定义， 不相等则更新，相等则不处理
-		if !reflect.DeepEqual(oldSpec, instance.Spec) {
-			// 更新StatefulSet, 只更换Spec
-			newStatefulSet := statefulset.New(instance)
-			oldStatefulset.Spec = newStatefulSet.Spec
-			if err := r.Client.Update(ctx, oldStatefulset); err != nil {
-				return ctrl.Result{}, err
-			}
+		// 	// 对比当前资源实例跟原来的定义， 不相等则更新，相等则不处理
+		// 	if !reflect.DeepEqual(oldSpec, instance.Spec) {
+		// 		// 更新StatefulSet, 只更换Spec
+		// 		newStatefulSet := statefulset.New(instance)
+		// 		oldStatefulset.Spec = newStatefulSet.Spec
+		// 		if err := r.Client.Update(ctx, oldStatefulset); err != nil {
+		// 			return ctrl.Result{}, err
+		// 		}
 
-			// 更新service
-			newService := service.New(instance)
-			oldService := &corev1.Service{}
-			if err := r.Client.Get(ctx, req.NamespacedName, oldService); err != nil {
-				return ctrl.Result{}, err
-			}
-			// 创建出的Service的Spec中会生成一些其他内容，需要重新赋值
-			clusterIP := oldService.Spec.ClusterIP
-			oldService.Spec = newService.Spec
-			oldService.Spec.ClusterIP = clusterIP // Service的ClusterIP, 10.254.x.x
-			if err := r.Client.Update(ctx, oldService); err != nil {
-				return ctrl.Result{}, err
-			}
+		// 		// 更新service
+		// 		newService := service.New(instance)
+		// 		oldService := &corev1.Service{}
+		// 		if err := r.Client.Get(ctx, req.NamespacedName, oldService); err != nil {
+		// 			return ctrl.Result{}, err
+		// 		}
+		// 		// 创建出的Service的Spec中会生成一些其他内容，需要重新赋值
+		// 		clusterIP := oldService.Spec.ClusterIP
+		// 		oldService.Spec = newService.Spec
+		// 		oldService.Spec.ClusterIP = clusterIP // Service的ClusterIP, 10.254.x.x
+		// 		if err := r.Client.Update(ctx, oldService); err != nil {
+		// 			return ctrl.Result{}, err
+		// 		}
 
-			// 更新资源的 Annotations
-			data, _ := json.Marshal(instance.Spec)
-			if instance.Annotations != nil {
-				instance.Annotations["spec"] = string(data)
-			} else {
-				instance.Annotations = map[string]string{"spec": string(data)}
-			}
-			if err := r.Client.Update(ctx, instance); err != nil {
-				return ctrl.Result{}, err
-			}
-		}
+		// 		// 更新资源的 Annotations
+		// 		data, _ := json.Marshal(instance.Spec)
+		// 		if instance.Annotations != nil {
+		// 			instance.Annotations["spec"] = string(data)
+		// 		} else {
+		// 			instance.Annotations = map[string]string{"spec": string(data)}
+		// 		}
+		// 		if err := r.Client.Update(ctx, instance); err != nil {
+		// 			return ctrl.Result{}, err
+		// 		}
+		// 	}
 	}
 
 	return ctrl.Result{}, nil
