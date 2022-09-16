@@ -55,9 +55,6 @@ type CkinstanceReconciler struct {
 func (r *CkinstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	// TODO(user): your logic here
-	//db, err := service.FetchDatabaseCR(req.Name, req.Namespace, r.Client)
-	// Get ck instance cr
 	instance := &ckopv1alpha1.Ckinstance{}
 	if err := r.Client.Get(ctx, req.NamespacedName, instance); err != nil {
 		if errors.IsNotFound(err) {
@@ -78,20 +75,14 @@ func (r *CkinstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		if errors.IsNotFound(err) {
 			// r.Log.Info("Redis对应的StatefulSet不存在，执行创建过程")
 
-			// 创建StatefulSet
-			// if err := r.Client.Create(ctx, statefulset.New(instance)); err != nil {
-			// 	return ctrl.Result{}, err
-			// }
+			if err := r.Client.Create(context.TODO(), service.NewDatabasePvc(instance, r.Scheme)); err != nil {
+				return ctrl.Result{}, err
+			}
+
 			if err := r.Client.Create(context.TODO(), service.NewDatabaseDeployment(instance, r.Scheme)); err != nil {
 				return ctrl.Result{}, err
 			}
 
-			// 创建Service
-			// if err := r.Client.Create(ctx, service.New(instance)); err != nil {
-			// 	return ctrl.Result{}, err
-			// }
-
-			// 更新资源的注解
 			data, _ := json.Marshal(instance.Spec)
 			if instance.Annotations != nil {
 				instance.Annotations["spec"] = string(data)

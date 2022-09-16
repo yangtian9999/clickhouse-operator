@@ -40,15 +40,16 @@ func NewDatabaseDeployment(db *v1alpha1.Ckinstance, scheme *runtime.Scheme) *app
 							Protocol:      "TCP",
 						}},
 						VolumeMounts: []corev1.VolumeMount{{
-							Name:      db.Name,
+							Name:      db.Spec.DatabaseName,
 							MountPath: "/etc/clickhouse-server/config.d/",
+							// MountPath: "/etc/clickhouse-server/",
 						}},
 					}},
 					Volumes: []corev1.Volume{{
-						Name: db.Name,
+						Name: db.Spec.DatabaseName,
 						VolumeSource: corev1.VolumeSource{
 							PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-								ClaimName: db.Name,
+								ClaimName: db.Spec.DatabaseName,
 							},
 						},
 					}},

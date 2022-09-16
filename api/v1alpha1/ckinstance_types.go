@@ -46,6 +46,12 @@ type CkinstanceSpec struct {
 
 	// +kubebuilder:validation:MinLength=1
 	Image string `json:"image,omitempty"`
+
+	// +kubebuilder:validation:MinLength=1
+	DatabaseStorageClassName string `json:"databaseStorageClassName,omitempty"`
+
+	// +kubebuilder:validation:MinLength=1
+	DatabaseStorageRequest string `json:"databaseStorageRequest,omitempty"`
 }
 
 // CkinstanceStatus defines the observed state of Ckinstance

@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	// "github.com/dev4devs-com/postgresql-operator/pkg/apis/postgresql/v1alpha1"
+
 	"github.com/yangtian9999/clickhouse-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
