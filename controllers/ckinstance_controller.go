@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -28,7 +29,6 @@ import (
 
 	ckopv1alpha1 "github.com/yangtian9999/clickhouse-operator/api/v1alpha1"
 	"github.com/yangtian9999/clickhouse-operator/service"
-	appsv1 "k8s.io/api/apps/v1"
 )
 
 // CkinstanceReconciler reconciles a Ckinstance object
@@ -42,6 +42,7 @@ type CkinstanceReconciler struct {
 //+kubebuilder:rbac:groups=ckop.yt9999.io,resources=ckinstances/finalizers,verbs=update
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=apps,resources=deployments/status,verbs=get
+//+kubebuilder:rbac:groups=core,resources=events;pods;pods/exec;persistentvolumeclaims;persistentvolumes;configmaps;secrets;services,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -68,18 +69,20 @@ func (r *CkinstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	}
 
 	// Get ck deployment resource
-	oldDeployment := &appsv1.Deployment{}
+	// oldDeployment := &appsv1.Deployment{}
+	oldCkInstance := &ckopv1alpha1.Ckinstance{}
 
 	//TODO: 如果StatefulSet不存在，则创建
-	if err := r.Client.Get(ctx, req.NamespacedName, oldDeployment); err != nil {
+	if err := r.Client.Get(ctx, req.NamespacedName, oldCkInstance); err != nil {
 		if errors.IsNotFound(err) {
 			// r.Log.Info("Redis对应的StatefulSet不存在，执行创建过程")
-
-			if err := r.Client.Create(context.TODO(), service.NewDatabasePvc(instance, r.Scheme)); err != nil {
-				return ctrl.Result{}, err
+			for i := 1; i < int(*instance.Spec.Shards); i++ {
+				if err := r.Client.Create(context.TODO(), service.NewDatabaseDeployment(instance, r.Scheme, instance.Spec.DatabaseName+"-"+strconv.Itoa(i))); err != nil {
+					return ctrl.Result{}, err
+				}
 			}
 
-			if err := r.Client.Create(context.TODO(), service.NewDatabaseDeployment(instance, r.Scheme)); err != nil {
+			if err := r.Client.Create(context.TODO(), service.NewDatabasePvc(instance, r.Scheme)); err != nil {
 				return ctrl.Result{}, err
 			}
 

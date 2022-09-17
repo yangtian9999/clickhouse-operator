@@ -10,16 +10,16 @@ import (
 )
 
 //buildDBDeployment returns the deployment object for the Database
-func NewDatabaseDeployment(db *v1alpha1.Ckinstance, scheme *runtime.Scheme) *appsv1.Deployment {
+func NewDatabaseDeployment(db *v1alpha1.Ckinstance, scheme *runtime.Scheme, ckResourceName string) *appsv1.Deployment {
 	ls := map[string]string{"owner": "ckoperator", "cr": db.Spec.DatabaseName}
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      db.Spec.DatabaseName,
+			Name:      ckResourceName,
 			Namespace: db.Spec.Namespace,
 			Labels:    ls,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: db.Spec.Shards,
+			// Replicas: db.Spec.Shards,
 			Strategy: appsv1.DeploymentStrategy{
 				Type: appsv1.RecreateDeploymentStrategyType,
 			},
@@ -33,23 +33,23 @@ func NewDatabaseDeployment(db *v1alpha1.Ckinstance, scheme *runtime.Scheme) *app
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
 						Image:           db.Spec.Image,
-						Name:            db.Spec.DatabaseName,
+						Name:            ckResourceName,
 						ImagePullPolicy: "IfNotPresent",
 						Ports: []corev1.ContainerPort{{
 							ContainerPort: db.Spec.TcpPort,
 							Protocol:      "TCP",
 						}},
 						VolumeMounts: []corev1.VolumeMount{{
-							Name:      db.Spec.DatabaseName,
+							Name:      ckResourceName,
 							MountPath: "/etc/clickhouse-server/config.d/",
 							// MountPath: "/etc/clickhouse-server/",
 						}},
 					}},
 					Volumes: []corev1.Volume{{
-						Name: db.Spec.DatabaseName,
+						Name: ckResourceName,
 						VolumeSource: corev1.VolumeSource{
 							PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-								ClaimName: db.Spec.DatabaseName,
+								ClaimName: ckResourceName,
 							},
 						},
 					}},

@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccc
+  namespace: test
+  labels:
+    app: ccc
+spec:
+  ports:
+  - port: 9000
+    name: tcpport
+  clusterIP: None
+  selector:
+    app: ccc
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ccc
+  namespace: test
+spec:
+  selector:
+    matchLabels:
+      app: ccc 
+  serviceName: "nginx"
+  replicas: 3 
+  template:
+    metadata:
+      labels:
+        app: ccc 
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: ccc
+        image: clickhouse/clickhouse-server:21.8.15
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9000
+          name: tcpport
+        volumeMounts:
+        - name: ccc
+          mountPath: /etc/clickhouse-server/config.d/
+  volumeClaimTemplates:   
+  - metadata:
+      name: ccc
+      namespace: test
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-path"  
+      resources:
+        requests:
+          storage: 1Gi
