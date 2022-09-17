@@ -24,6 +24,24 @@ rules:
   verbs:
   - get
 - apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets/status
+  verbs:
+  - get
+- apiGroups:
   - ckop.yt9999.io
   resources:
   - ckinstances

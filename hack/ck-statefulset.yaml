@@ -22,7 +22,7 @@ spec:
   selector:
     matchLabels:
       app: ccc 
-  serviceName: "nginx"
+  serviceName: ccc
   replicas: 3 
   template:
     metadata:
