@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: simple-cronjob
+  namespace: test
+spec:
+  schedule: "*/5 * * * *" # Runs every 5 minutes
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes CronJob!
+          restartPolicy: OnFailure
